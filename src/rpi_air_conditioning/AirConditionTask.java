@@ -259,6 +259,12 @@ public class AirConditionTask {
                 Logger.getLogger(RPI_Air_Conditioning.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        rpio.resetRly(ACTASK, TASKLEVEL, R_AC1);
+        rpio.resetRly(ACTASK, TASKLEVEL, R_AC2);
+        rpio.resetRly(ACTASK, TASKLEVEL, ALARM);
+        rpio.releaseLock(ACTASK, TASKLEVEL, R_AC1);
+        rpio.releaseLock(ACTASK, TASKLEVEL, R_AC2);
+        rpio.releaseLock(ACTASK, TASKLEVEL, ALARM);
         }
     
     }
@@ -284,7 +290,9 @@ public class AirConditionTask {
     }
     
     private void createAClog() throws FileNotFoundException, UnsupportedEncodingException{
-        PrintWriter writer = new PrintWriter("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt", "UTF-8");
+        File file = new File("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt");
+        file.getParentFile().mkdirs();
+        PrintWriter writer = new PrintWriter(file, "UTF-8");
       //  PrintWriter writer = new PrintWriter("ac_log.txt", "UTF-8");
         writer.println("Running hours,"+ac1_timer+","+ac2_timer+","+System.currentTimeMillis()+"\n");
         writer.close();
@@ -311,16 +319,17 @@ public class AirConditionTask {
             log[2] = Long.parseLong(parts[3]);
             
         } catch (FileNotFoundException ex) {
-            PrintWriter writer;
+            ac1_timer=0;
+            ac2_timer=0;
+            log[0] = 0;
+            log[1] = 0;
+            log[2] = System.currentTimeMillis();
             try {
-                writer = new PrintWriter("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt", "UTF-8");
-             //   writer = new PrintWriter("ac_log.txt", "UTF-8");
-                writer.println("Running hours," + 0 + "," + 0 + ","+System.currentTimeMillis()+"\n");
-                writer.close();
+                createAClog();
             } catch (FileNotFoundException ex1) {
-                Logger.getLogger(RPI_Air_Conditioning.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(AirConditionTask.class.getName()).log(Level.SEVERE, null, ex1);
             } catch (UnsupportedEncodingException ex1) {
-                Logger.getLogger(RPI_Air_Conditioning.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(AirConditionTask.class.getName()).log(Level.SEVERE, null, ex1);
             }
            
         }

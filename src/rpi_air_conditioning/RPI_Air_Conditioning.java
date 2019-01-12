@@ -30,7 +30,8 @@ public class RPI_Air_Conditioning {
     static boolean runFlag = true;
 
     public static void main(String[] args) throws IOException {
-
+        //args[0] = IP address of remote rpi module.
+        // if null, rpi module is localhost
         if (args.length == 0) {
             ac_task = new AirConditionTask();
         } else {
