@@ -210,6 +210,8 @@ public class AirConditionTask {
                 default:
                     reset="System running normally. NO need to reset\n";
             }
+        }else{
+            reset="System in ALARM. Cannot reset";
         }
         return reset;
     }
@@ -256,7 +258,7 @@ public class AirConditionTask {
             if(get_input(AUTO)){
                 if(state==0){
                     setAirCondition(1);
-                }else{
+                }else if (state==1){
                     setAirCondition(2);
                 }
                 try {
