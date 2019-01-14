@@ -97,6 +97,11 @@ public class AirConditionTask {
         return "Alarm set";
     }
     
+    public String getAlarmTemp(){
+        String temp=String.format("%.2f", this.alarm);
+        return temp;
+    }
+    
     public String setFilter(double rc){
         this.alfa=rc;
         return "RC Filter set";
@@ -116,11 +121,19 @@ public class AirConditionTask {
         return "Temp Set";
     }
     
+    public String getSimTemp(){
+        String temp=String.format("%.2f", this.sim_temp);
+        return temp;
+    }
     public String setScheduleTimer(int timer){
         this.schedule_timer=timer;
         schedule.setSchedule(AirConditionScheduler.MINUTE, schedule_timer);
         nextDate = schedule.calcScheduleTime();
         return "Schedule set";
+    }
+    
+    public String getScheduleTimer(){
+        return ""+this.schedule_timer;
     }
     
     public String getTemperature(){
@@ -139,7 +152,9 @@ public class AirConditionTask {
                 else{
                     report="AC System mode: MANUAL\n";
                 }
-         
+        if(sim_flag){
+            report=report+"Temperature simulation mode ACTIVE\n";
+        } 
         switch(state){
             case 0:
                 report=report+"AC #1: RUNNING\n";
@@ -229,8 +244,10 @@ public class AirConditionTask {
             
             if (ac1_timer > ac2_timer) {
                 state = 1;
+            }else{
+                state = 0;
             }
-            
+           
             while (runFlag) {
             processTemp();
             alarm_flag=checkTempAlarm();
@@ -239,6 +256,8 @@ public class AirConditionTask {
             if(get_input(AUTO)){
                 if(state==0){
                     setAirCondition(1);
+                }else{
+                    setAirCondition(2);
                 }
                 try {
                     check_state(); //if Auto run schedule

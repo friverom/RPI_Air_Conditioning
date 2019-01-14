@@ -113,8 +113,14 @@ public class RPI_Air_Conditioning {
             case "set sim temp":
                 reply = ac_task.setSimTemp(data);
                 break;
+            case "get sim temp":
+                reply=ac_task.getSimTemp();
+                break;
             case "set alarm temp":
                 reply = ac_task.setAlarmTemp(data);
+                break;
+            case "get alarm temp":
+                reply = ac_task.getAlarmTemp();
                 break;
             case "reset alarm":
                 reply = ac_task.resetAlarm();
@@ -124,6 +130,9 @@ public class RPI_Air_Conditioning {
                 break;
             case "set schedule":
                 reply= ac_task.setScheduleTimer((int)data);
+                break;
+            case "get schedule":
+                reply=ac_task.getScheduleTimer();
                 break;
             case "get temperature":
                 reply = ac_task.getTemperature();
