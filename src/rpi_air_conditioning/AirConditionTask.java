@@ -6,8 +6,15 @@
 package rpi_air_conditioning;
 
 import common.DataArray;
+import common.ReadTextFile;
+import common.WriteTextFile;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -59,7 +66,7 @@ public class AirConditionTask {
     private boolean sim_flag = false;
     private double sim_temp = 22.0;
     
-    public AirConditionTask() {
+    public AirConditionTask() throws IOException {
         long[] log=new long[2];
         this.address="localhost";
         rpio = new Net_RPI_IO(this.address,30000);
@@ -68,9 +75,10 @@ public class AirConditionTask {
         ac2_timer=log[1];
         start_date=log[2];
         ac_last=start_date;
+        readSettings();
     }
     
-    public AirConditionTask(String address){
+    public AirConditionTask(String address) throws IOException{
         long[] log=new long[2];
         this.address=address;
         rpio = new Net_RPI_IO(this.address,30000);
@@ -79,6 +87,7 @@ public class AirConditionTask {
         ac2_timer=log[1];
         start_date=log[2];
         ac_last=start_date;
+        readSettings();
     }
     
     public String start(){
@@ -87,13 +96,15 @@ public class AirConditionTask {
         return "Started";
     }
     
-    public String killThread(){
+    public String killThread() throws IOException{
+        saveSettings();
         runFlag=false;
         return "Killed";
     }
     
-    public String setAlarmTemp(double temp){
+    public String setAlarmTemp(double temp) throws IOException{
         this.alarm=temp;
+        saveSettings();
         return "Alarm set";
     }
     
@@ -106,8 +117,9 @@ public class AirConditionTask {
         this.alfa=rc;
         return "RC Filter set";
     }
-    public String setSimFlag(){
+    public String setSimFlag() throws IOException{
         this.sim_flag=true;
+        saveSettings();
         return "Sim mode active";
     }
     
@@ -116,8 +128,9 @@ public class AirConditionTask {
         return "Temp mode active";
     }
     
-    public String setSimTemp(double temp){
+    public String setSimTemp(double temp) throws IOException{
         this.sim_temp=temp;
+        saveSettings();
         return "Temp Set";
     }
     
@@ -125,10 +138,11 @@ public class AirConditionTask {
         String temp=String.format("%.2f", this.sim_temp);
         return temp;
     }
-    public String setScheduleTimer(int timer){
+    public String setScheduleTimer(int timer) throws IOException{
         this.schedule_timer=timer;
         schedule.setSchedule(AirConditionScheduler.MINUTE, schedule_timer);
         nextDate = schedule.calcScheduleTime();
+        saveSettings();
         return "Schedule set";
     }
     
@@ -467,7 +481,7 @@ public class AirConditionTask {
          //   alarm_flag = true;
             return true;
         }
-        else if(roomTemp<25.0){
+        else if(roomTemp<(alarm-1)){
                    
             return false;
         } else {
@@ -512,7 +526,50 @@ public class AirConditionTask {
         }
         return status;
     }
-     
+    
+    /**
+     * Reads variable setting for Air Conditioning task.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private void readSettings() throws FileNotFoundException, IOException{
+        String path = "/home/pi/NetBeansProjects/RPI_Air_Conditioning/vars.txt";
+        File file = new File(path);
+       
+        if(!file.exists()){
+            file.createNewFile();
+            saveSettings();
+        }
+        
+        ReadTextFile rf = new ReadTextFile(path);
+        String[] lines=rf.openFile();
+        
+        String text = null;
+        String[] parts = lines[0].split(";",4);
+        
+        if(parts.length==4){
+                sim_flag=Boolean.parseBoolean(parts[0]);
+                sim_temp=Double.parseDouble(parts[1]);
+                alarm=Double.parseDouble(parts[2]);
+                schedule_timer=Integer.parseInt(parts[3]);
+            }
+      
+    }
+    
+     /**
+     * Saves variable settings to file
+     * @return
+     * @throws IOException 
+     */
+    private void saveSettings() throws IOException{
+        
+        String path = "/home/pi/NetBeansProjects/RPI_Air_Conditioning/vars.txt";
+        
+        WriteTextFile write = new WriteTextFile(path,false);        
+        String data="";
+        data=sim_flag+";"+sim_temp+";"+alarm+";"+schedule_timer+"\n";
+        write.writeToFile(data);
+    }
      
 }
 
