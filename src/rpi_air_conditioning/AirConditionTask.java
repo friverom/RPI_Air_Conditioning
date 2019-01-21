@@ -6,8 +6,6 @@
 package rpi_air_conditioning;
 
 import common.DataArray;
-import common.ReadTextFile;
-import common.WriteTextFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +21,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rpio_client.Net_RPI_IO;
+import util.ReadTextFile;
+import util.WriteTextFile;
 
 /**
  *
@@ -236,15 +236,25 @@ public class AirConditionTask {
         return "AC alarm Acknowledged";
     }
     
-    public String getTempLog(int sampletime) {
+    public void getTempLog(int sampletime) throws IOException {
         
+        String path = "/home/pi/NetBeansProjects/RPI_Air_Conditioning/templog"+sampletime+".txt";
+        File file = new File(path);
+                
+        if(!file.exists()){
+            file.createNewFile();
+        }
+        
+        WriteTextFile templog = new WriteTextFile(path,false);
         String data ="";
-        data=String.format("%.2f,", avg_temp.getData(0));
+        data=String.format("%.2f,\n", avg_temp.getData(0));
+        templog.writeToFile(data);
         
         for(int i=sampletime; i<1440; i+=sampletime){
-            data=data+String.format("%.2f,", avg_temp.getData(i));
+            data=data+String.format("%.2f, \n", avg_temp.getData(i));
+            templog.writeToFile(data);
         }
-        return data;
+        
     }
     
     public class AcTask implements Runnable{

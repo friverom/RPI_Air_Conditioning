@@ -138,7 +138,7 @@ public class RPI_Air_Conditioning {
                 reply = ac_task.getTemperature();
                 break;
             case "get temp log":
-                reply=ac_task.getTempLog((int)data);
+                ac_task.getTempLog((int)data);
                 break;
             default:
                 reply="invalid command";
