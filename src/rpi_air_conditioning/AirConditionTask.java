@@ -236,7 +236,7 @@ public class AirConditionTask {
         return "AC alarm Acknowledged";
     }
     
-    public void getTempLog(int sampletime) throws IOException {
+    public String getTempLog(int sampletime) throws IOException {
         
         String path = "/home/pi/NetBeansProjects/RPI_Air_Conditioning/templog"+sampletime+".txt";
         File file = new File(path);
@@ -254,7 +254,7 @@ public class AirConditionTask {
             data=data+String.format("%.2f, \n", avg_temp.getData(i));
             templog.writeToFile(data);
         }
-        
+        return path;
     }
     
     public class AcTask implements Runnable{
