@@ -291,6 +291,8 @@ public class AirConditionTask {
                     Logger.getLogger(AcTask.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (UnsupportedEncodingException ex) {
                     Logger.getLogger(AcTask.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(AirConditionTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 auto=true;
             } else {
@@ -334,16 +336,31 @@ public class AirConditionTask {
         }
     }
     
-    private void createAClog() throws FileNotFoundException, UnsupportedEncodingException{
+    private void createAClog() throws FileNotFoundException, UnsupportedEncodingException, IOException{
+        
         File file = new File("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt");
+        if(!file.exists()){
+            WriteTextFile write = new WriteTextFile("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt",false);
+            String text = String.format("Running hours,%d,%d,%d", ac1_timer,ac2_timer,System.currentTimeMillis());
+            write.writeToFile(text);
+        } else {
+            ReadTextFile read = new ReadTextFile("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt");
+            String[] lines = read.openFile();
+            String parts[] = lines[0].split(",");
+            String data = String.format("Running hours,%d,%d,%d", ac1_timer,ac2_timer,parts[3]);
+            WriteTextFile write = new WriteTextFile("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt",false);
+            write.writeToFile(data);
+        }
+        
+     /*   File file = new File("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt");
         file.getParentFile().mkdirs();
         PrintWriter writer = new PrintWriter(file, "UTF-8");
       //  PrintWriter writer = new PrintWriter("ac_log.txt", "UTF-8");
         writer.println("Running hours,"+ac1_timer+","+ac2_timer+","+System.currentTimeMillis()+"\n");
-        writer.close();
+        writer.close();*/
     }
     
-    private long[] readAClog(){
+    private long[] readAClog() throws IOException{
         Scanner scanner;
         long[] log = new long[3];
         log[0]=0;
@@ -380,7 +397,7 @@ public class AirConditionTask {
         }
        return log; 
     }
-     private void check_state() throws FileNotFoundException, UnsupportedEncodingException{
+     private void check_state() throws FileNotFoundException, UnsupportedEncodingException, IOException{
     
         switch(state){
         
