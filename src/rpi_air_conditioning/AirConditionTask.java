@@ -347,7 +347,7 @@ public class AirConditionTask {
             ReadTextFile read = new ReadTextFile("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt");
             String[] lines = read.openFile();
             String parts[] = lines[0].split(",");
-            String data = String.format("Running hours,%d,%d,%d", ac1_timer,ac2_timer,parts[3]);
+            String data = String.format("Running hours,%d,%d,%d", ac1_timer,ac2_timer,Long.parseLong(parts[3]));
             WriteTextFile write = new WriteTextFile("/home/pi/NetBeansProjects/RPI_Air_Conditioning/ac_log.txt",false);
             write.writeToFile(data);
         }
