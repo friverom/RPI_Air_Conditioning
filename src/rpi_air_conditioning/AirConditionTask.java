@@ -267,6 +267,7 @@ public class AirConditionTask {
             rpio.setLock(ACTASK, TASKLEVEL, R_AC1);
             rpio.setLock(ACTASK, TASKLEVEL, R_AC2);
             rpio.setLock(ACTASK, TASKLEVEL, ALARM);
+            rpio.setAnalogSettings(ACTASK, TASKLEVEL, TEMP, "20;0.0;1.0");
             
             if (ac1_timer > ac2_timer) {
                 state = 1;
