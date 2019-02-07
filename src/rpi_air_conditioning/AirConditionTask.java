@@ -74,7 +74,8 @@ public class AirConditionTask {
         ac1_timer=log[0];
         ac2_timer=log[1];
         start_date=log[2];
-        ac_last=start_date;
+        //ac_last=start_date;
+        ac_last=System.currentTimeMillis();
         readSettings();
     }
     
@@ -86,7 +87,8 @@ public class AirConditionTask {
         ac1_timer=log[0];
         ac2_timer=log[1];
         start_date=log[2];
-        ac_last=start_date;
+        //ac_last=start_date;
+        ac_last=System.currentTimeMillis();
         readSettings();
     }
     
@@ -530,7 +532,8 @@ public class AirConditionTask {
         //double analog=(double)value/4096*5;
         //double temp=18.752*analog-36.616;
        // double analog=(double)value/4096*4.096; 0..20mA sensor
-        temp=22.965*voltage-41.427;
+        //temp=22.965*voltage-41.427;
+        temp=4.6860*voltage-41.427;
        // System.out.format("Temp %.2f%n", temp);
         return temp;
         } else {
